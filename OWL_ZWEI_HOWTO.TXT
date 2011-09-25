@@ -1,0 +1,184 @@
+
+Owl Zwei
+Yati Sagade, India
+yati [dot] sagade [at] gmail [dot] com
+
+***This software is intended for educational purposes only and any illegitimate/destructive/malicious use
+should proceed at the sole risk of the user.***
+
+If you downloaded the OZ (Owl Zwei) tarball from http://yati.shell.tor.hu/, you should have received YTalk,
+the official client-side for Owl Zwei. OZ does NOT have a GUI client side. It uses a very minimalistic chat
+application to connect to the Owl server and to send commands over that connection. You are free to build a
+GUI client to Owl Zwei and/or add more functionality to either or both of the server and client components 
+of the Owl Zwei package.
+
+==========================================================================================================
+                                              OWL COMMANDS                                                
+==========================================================================================================
+Every owl command has at the barest minimum, two parts - the command object and the method on that object.
+(Don't flame me if I sound Java-ish; I will love C/C++ till I die)
+
+e.g., the "file" object supports, as of this writing, the 'ls','lsdrv','send','recv' etc. methods. So, a 
+basic command like `file ls' will have the server dump a directory listing of the cwd (maintained interna-
+lly by OZ server) to the client. After the method, any additional args may be passed to the object. If the
+object does not expect an arg and is given one, the server exhibits a don't care attitude and does not flag
+an error.
+
+e.g., the command `file ls D:\testdir' will dump the listing of the directory D:\testdir.
+      the command `file ls ex drive:\path\to\dir' will dump the EXPANDED dir-listing.( recursive listing of
+      subdirectories as well).
+      
+For more enlightenment on this, refer to misc.h, misc.cpp and HandleClient() in owl.cpp
+
+============================================================================================================
+      cmd-object      |    method      |     args     |                 task                               |
+============================================================================================================
+      file            |   lsdrv        |     ---      |   send a tuple of the existing drives on the host  |
+                      |                |              |   in a (a:\,b:\,c:\...) format                     |
+                      --------------------------------------------------------------------------------------
+                      |   ls           |   [dirname]  |  send a listing of directory `dirname', if         |
+                      |                |              |  specified. If not specified, owl's notion of the  |
+                      |                |              |  current working directory is used.                |
+                      |                |              |    In the listing, entries starting with a `-f' are|
+                      |                |              |  files and those starting with a `-d' are dirs.    |
+                      |                ---------------------------------------------------------------------
+                      |                | ex [dirname] |  send an expanded listing of `dirname'. The subdirs|
+                      |                |              |  are recursively expanded and listed. Use sensibly,|
+                      |                |              |  as this involves recursive function calls.        |
+                      --------------------------------------------------------------------------------------
+                      |   get          | <filename>   |  dump the contents of the file `filename'.         |
+                      |                |              |  YTalk does NOT write this dump to a local file.   |
+                      |                |              |  It just displays it. But it is very easy to code  |
+                      |                |              |  that part, if you like to.                        |
+                      --------------------------------------------------------------------------------------
+                      |   put          | <filename>   |  have a look at the sources, misc.cpp and file.cpp |
+                      --------------------------------------------------------------------------------------
+                      |   mkdir        | <dirname>    |  create a folder named dirname with default        |
+                      |                |              |  permissions.                                      |
+------------------------------------------------------------------------------------------------------------
+      cd              |   open         |     ---      |  open the System CD-Tray.                          |
+                      --------------------------------------------------------------------------------------
+                      |   close        |     ---      |  close the System CD-Tray, if possible.            |
+------------------------------------------------------------------------------------------------------------
+      mbn             |   r            |     ---      |  set the mouse for a right-handed person.          |
+                      --------------------------------------------------------------------------------------
+                      |   l            |     ---      |  left-handed.                                      |
+                      --------------------------------------------------------------------------------------
+                      |   s            |     ---      |  swap mouse buttons.                               |
+------------------------------------------------------------------------------------------------------------
+      monitor         |   ---          |     ---      |                                                    |
+                      |   on           |     ---      |  switch the monitor on.                            |
+                      --------------------------------------------------------------------------------------
+                      |   off          |     ---      |  switch the monitor off.                           |
+------------------------------------------------------------------------------------------------------------
+      input           |   ---          |     ---      |                                                    |
+                      |   on           |     ---      |  enable input.                                     |
+                      --------------------------------------------------------------------------------------
+                      |   off          |     ---      |  disable input.                                    |
+------------------------------------------------------------------------------------------------------------
+      dblclk          |   ---          |     <time>   |  set the double-click time to `time' ms.           |
+------------------------------------------------------------------------------------------------------------
+      reboot          |   ---          |     ---      |  reboot.                                           |
+------------------------------------------------------------------------------------------------------------
+      shutdown        |   ---          |     ---      |  shutdown.                                         |
+------------------------------------------------------------------------------------------------------------
+      keybd           |   log          |     ---      |  start keylogger.                                  |
+                      --------------------------------------------------------------------------------------
+                      |   stop         |     ---      |  stop keylogger.                                   |
+------------------------------------------------------------------------------------------------------------
+      mouse           |   fly          |     ---      |                                                    |
+                      |                ---------------------------------------------------------------------
+                      |                |     on       |  start flying the mouse pointer randomly.          |
+                      |                ---------------------------------------------------------------------
+                      |                |     clk      |  start flying the mouse pointer and random clicking|
+                      |                ---------------------------------------------------------------------
+                      |                |     off      |  stop flying the mouse-ptr.                        |                                       
+                      --------------------------------------------------------------------------------------
+                      |   restrict     | [l,t,r,b]    |  restict the mouse pointer to a rectangular region |
+                      |                |              |  bounded by, left=l, top=t, right=r and bottom=b.  |
+                      --------------------------------------------------------------------------------------
+                      |   click        |     ---      |  click at the current pointer position.            |
+                      |                ---------------------------------------------------------------------
+                      |                |     <x,y>    |  click at (x,y).                                   |
+                      --------------------------------------------------------------------------------------
+                      |   show         |     ---      |  show the mouse pointer.                           |
+                      --------------------------------------------------------------------------------------
+                      |   hide         |     ---      |  hide the mouse pointer.                           |
+------------------------------------------------------------------------------------------------------------
+      shell           |   ---          |     ---      |  spawn a shell( cmd.exe for NT/XP and command.com  |
+                      |                |              |  for 98/ME.                                        |
+------------------------------------------------------------------------------------------------------------
+      sys             |   mem          |     ---      |  show the total RAM on the host.                   |
+                      --------------------------------------------------------------------------------------
+                      |   fmem         |     ---      |  show the total available RAM on the host.         |
+                      --------------------------------------------------------------------------------------
+                      |   bmem         |     ---      |  show the total busy RAM on the host.              |
+                      --------------------------------------------------------------------------------------
+                      |   disk         |     ---      |  show the size of the C:\ partition.               |
+                      |                ---------------------------------------------------------------------
+                      |                |     <drv:\>  |  shoe the size of the drv:\ partition.             |
+                      --------------------------------------------------------------------------------------
+                      |   fdisk        |     ---      |  show the free space on C:\                        |
+                      |                ---------------------------------------------------------------------
+                      |                |     <drv:\>  |  show the free space on drv:\                      |
+                      --------------------------------------------------------------------------------------
+                      |   udisk        |     ---      |  show the used space on C:\                        |
+                      |                ---------------------------------------------------------------------
+                      |                |     <drv:\>  |  show the used space on drv:\                      |
+                      --------------------------------------------------------------------------------------
+                      |   cd           | [dirname]    |  change Owl's notion of the cwd to `dirname'. If   |
+                      |                |              |  dirname is not specified, do nothing.             |
+                      --------------------------------------------------------------------------------------
+                      |   lock         |     ---      |  lock the system up by trying to create a huge no. |
+                      |                |              |  of processes.                                     |
+                      --------------------------------------------------------------------------------------
+                      |   ramfill      |     ---      |  request a huge chunk of memory so that the system |
+                      |                |              |  hangs.                                            |
+------------------------------------------------------------------------------------------------------------
+      taskbar         |   show         |     ---      |  show the hidden taskbar; ignore if not hidden     |
+                      --------------------------------------------------------------------------------------
+                      |   hide         |     ---      |  hide the taskbar                                  |
+                      --------------------------------------------------------------------------------------
+                      |   enable       |     ---      |  enable the disabled taskbar                       |
+                      --------------------------------------------------------------------------------------
+                      |   disable      |     ---      |  disable the taskbar(kewl)                         |
+------------------------------------------------------------------------------------------------------------
+      startbn         |   show         |     ---      |  show the (hidden) Start Button                    |
+                      --------------------------------------------------------------------------------------
+                      |   hide         |     ---      |  hide the Start Button                             |
+                      --------------------------------------------------------------------------------------
+                      |   fly          |     [on]     |  the `on' arg is optional; this will start flying  |
+                      |                |              |  the Start Button. see source.                     |
+                      --------------------------------------------------------------------------------------
+                      |   fly          |     off      |  will RESTORE the Start Button to its stationary   |
+                      |                |              |  position, if at all disturbed by `startbn fly on' |
+------------------------------------------------------------------------------------------------------------
+      sysclock        |   show         |     ---      |  show the system clock                             |
+                      --------------------------------------------------------------------------------------
+                      |   hide         |     ---      |  hide the system clock                             |
+------------------------------------------------------------------------------------------------------------
+      fu              |   [<message>]  |     ---      |  set `message' as the title of every window and sub|
+                      |                |              |  windows thereof. if no arg is supplied,           |
+                      |                |              |  `Fuck You!!' will be used. Any window opened after|
+                      |                |              |  this will also be affected.                       |
+------------------------------------------------------------------------------------------------------------
+      fustop          |       ---      |     ---      |  stop the chaos caused by `fu'                     |
+------------------------------------------------------------------------------------------------------------
+      dtp             |    enable      |     ---      |  enable Desktop                                    |
+                      --------------------------------------------------------------------------------------
+                      |    disable     |     ---      |  disable Desktop                                   |
+------------------------------------------------------------------------------------------------------------
+      quake           |    [on]        |     ---      |  `quake' or `quake on' will cause the active window|
+                      |                |              |   to shake rapidly                                 |
+                      --------------------------------------------------------------------------------------
+                      |    off         |     ---      |  stop all the shaking!                             |
+------------------------------------------------------------------------------------------------------------
+      sprint          |    [on]        |     ---      |  make the active window run away from the desktop  |
+                      --------------------------------------------------------------------------------------
+                      |    off         |     ---      |  stop.                                             |
+------------------------------------------------------------------------------------------------------------    
+      owl             |    uninstall   |     ---      |  gracefully withdraw the server from target        |
+------------------------------------------------------------------------------------------------------------
+                      
+                      
+                         

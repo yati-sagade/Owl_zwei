@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2010/01/14 15:07:28.218.bdsproj,C:\Documents and Settings\Admin\My Documents\Borland Studio Projects\Project1.bdsproj=C:\Documents and Settings\Admin\My Documents\Borland Studio Projects\Project1.bdsproj</Transaction>
+    <Transaction>2010/01/15 00:42:32.421.bdsproj,C:\Documents and Settings\Admin\My Documents\Borland Studio Projects\Project1.bdsproj=C:\Documents and Settings\Admin\My Documents\Borland Studio Projects\YTalk.bdsproj</Transaction>
+    <Transaction>2010/01/15 00:42:32.609.bdsproj,C:\Documents and Settings\Admin\My Documents\Borland Studio Projects\YTalk.bdsproj=C:\Documents and Settings\Admin\My Documents\Borland Studio Projects\Project1.bdsproj</Transaction>
+    <Transaction>2010/01/15 00:45:28.140.bdsproj,C:\Documents and Settings\Admin\My Documents\Borland Studio Projects\Project1.bdsproj=C:\Documents and Settings\Admin\My Documents\Borland Studio Projects\YTalk.bdsproj</Transaction>
+    <Transaction>2010/01/15 00:47:03.468.cpp,C:\Documents and Settings\Admin\My Documents\Borland Studio Projects\Unit1.cpp=C:\Documents and Settings\Admin\My Documents\Borland Studio Projects\YTalk_Unit1.cpp</Transaction>
+    <Transaction>2010/01/15 00:47:03.468.h,C:\Documents and Settings\Admin\My Documents\Borland Studio Projects\Unit1.h=C:\Documents and Settings\Admin\My Documents\Borland Studio Projects\YTalk_Unit1.h</Transaction>
+    <Transaction>2010/01/15 00:47:03.468.dfm,C:\Documents and Settings\Admin\My Documents\Borland Studio Projects\Unit1.dfm=C:\Documents and Settings\Admin\My Documents\Borland Studio Projects\YTalk_Unit1.dfm</Transaction>
+  </Transactions>
+	<IPServerDescMap></IPServerDescMap>
+	<StarTeamShortcuts>; 1; 0; False; 0; -1; </StarTeamShortcuts>
+	<StarTeamMiscUserData></StarTeamMiscUserData>
+</BorlandProject>

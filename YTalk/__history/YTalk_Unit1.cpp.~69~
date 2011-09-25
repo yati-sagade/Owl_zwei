@@ -1,0 +1,260 @@
+//$$---- Form CPP ----
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#include <stdio.h>
+#pragma hdrstop
+#define MAXLEN 1024
+#define mb(text) MessageBox(0,(text),"YTalk",MB_OK)
+
+#include "YTalk_Unit1.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma resource "*.dfm"
+TForm1 *Form1;
+int write_buf_to_file( const char *path , void *buf ,size_t size  );
+int write_buf_to_file_a( const char *path , void *buf , size_t size );
+
+//---------------------------------------------------------------------------
+__fastcall TForm1::TForm1(TComponent* Owner)
+	: TForm(Owner)
+{
+	mode=CLIENT_MODE;
+	bConnected=false;
+	bListening=false;
+	bFileListening=false;
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::RadioButton1Click(TObject *Sender)
+{
+	Label1->Enabled=false;
+	Edit1->Enabled=false;
+	Button1->Caption="l&isten";
+	mode=SERVER_MODE;
+	Label5->Caption="Not Listening";
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::RadioButton2Click(TObject *Sender)
+{
+	Label1->Enabled=true;
+	Edit1->Enabled=true;
+	Button1->Caption="&connect";
+	mode=CLIENT_MODE;
+	Label5->Caption="Not Connected";
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::Button1Click(TObject *Sender)
+{
+	if( mode == SERVER_MODE )//server mode
+	{
+		if( bListening == false ){
+			Label2->Enabled=false;
+			Edit2->Enabled=false;
+			Edit1->Text="127.0.0.1";
+
+			ServerSocket1->Port=StrToInt( Edit2->Text );
+			ServerSocket1->Active=true;
+		}else{
+			ServerSocket1->Active=false;
+			Label2->Enabled=true;
+			Edit2->Enabled=true;
+			Label5->Caption="Not Listening";
+			Button1->Caption="l&isten";
+			bListening=false;
+			Mode->Enabled=true;
+
+		}
+
+
+	}else if( mode == CLIENT_MODE )//client mode
+	{
+		if( bConnected == false ){
+			Label1->Enabled=false;
+			Edit1->Enabled=false;
+			Label2->Enabled=false;
+			Edit2->Enabled=false;
+
+			ClientSocket1->Host=Edit1->Text;
+			ClientSocket1->Port=StrToInt( Edit2->Text );
+			ClientSocket1->Active=true;
+		}else{
+			ClientSocket1->Socket->Close();
+		}
+	}
+
+}
+
+
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::Button2Click(TObject *Sender)
+{
+	if( mode == SERVER_MODE )//serv-mode
+	{
+		if( Edit3->Text.Trim() != "" )
+			ServerSocket1->Socket->Connections[0]->SendText( Edit3->Text.Trim() + char(13)+char(10));
+
+	}else if( mode == CLIENT_MODE )
+	{
+		if( Edit3->Text.Trim() != "" )
+			ClientSocket1->Socket->SendText( Edit3->Text.Trim() + char(13)+char(10)+char(0));
+	}
+	Edit3->Clear();
+
+}
+
+void __fastcall TForm1::ClientSocket1Connect(TObject *Sender,
+	  TCustomWinSocket *Socket)
+{
+	if( mode == CLIENT_MODE ){
+		Edit3->Enabled=true;
+		Label3->Enabled=true;
+		Button2->Enabled=true;
+		Mode->Enabled=false;
+		bConnected=true;
+		Button1->Caption="disco&nnect";
+		Label5->Caption = "Connected to " + Edit1->Text + ":" + Edit2->Text;
+
+	
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::ClientSocket1Disconnect(TObject *Sender,
+	  TCustomWinSocket *Socket)
+{
+	Edit3->Enabled=false;
+	Label3->Enabled=false;
+	Button2->Enabled=false;
+	Mode->Enabled=true;
+	Label5->Caption= "Not Connected";
+	bConnected=false;
+	Button1->Caption="&connect";
+	Label1->Enabled=true;
+	Edit1->Enabled=true;
+	Label2->Enabled=true;
+	Edit2->Enabled=true;
+	
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::ClientSocket1Read(TObject *Sender,
+	  TCustomWinSocket *Socket)
+{
+	Memo1->Lines->Add( Socket->ReceiveText() );
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::ServerSocket1Accept(TObject *Sender,
+	  TCustomWinSocket *Socket)
+{
+	Edit3->Enabled = true;
+	Label3->Enabled = true;
+	Button2->Enabled=true;
+	Mode->Enabled=false;
+	Label5->Caption = "Connected to " + Socket->RemoteHost + ":"
+						+ Socket->RemotePort;
+
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::ServerSocket1Listen(TObject *Sender,
+	  TCustomWinSocket *Socket)
+{
+	Button1->Caption="sto&p";
+	bListening=true;
+	Label2->Enabled=false;
+	Edit2->Enabled=false;
+	Label5->Caption = "Listening on port " + Edit2->Text + "...";
+	Mode->Enabled=false;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::ServerSocket1ClientRead(TObject *Sender,
+	  TCustomWinSocket *Socket)
+{
+	AnsiString s = Socket->ReceiveText();
+	char *ptr = s.c_str();
+	char *t = new char[strlen(ptr) + 1];
+	strcpy( t , "" );
+	int i = 0;
+	while( *ptr ){
+		memset( t , 0 , strlen(ptr) + 1 );
+		while( *ptr && ( *ptr != '\n' ) ) t[i++] = *ptr++;
+		if( *ptr == '\n' || ( *ptr == 0 && strlen(t) ) ){
+			Memo1->Lines->Add( new AnsiString( t ) );
+		}
+		ptr++;
+	}
+	
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::ServerSocket1ClientDisconnect(TObject *Sender,
+	  TCustomWinSocket *Socket)
+{
+	Mode->Enabled=true;
+	Edit3->Enabled=false;
+	Label3->Enabled=false;
+	Button2->Enabled=false;
+	Button1->Enabled = true;
+	Label5->Caption = "Listening on port " + Edit2->Text + "...";
+	Edit2->Enabled=true;
+	Label2->Enabled=true;
+	//ServerSocket1->Active=false;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::Image1Click(TObject *Sender)
+{
+	MessageBox(	0,"YTalk: Official client-side for Owl\n\
+					Author: Yati Sagade\nyati[dot]sagade[at]gmail.com\n",
+					  "About YTalk",MB_OK );
+
+}
+//---------------------------------------------------------------------------
+
+
+
+
+
+int write_buf_to_file( const char *path , void *buf ,size_t size  )
+{
+	
+	FILE *fp;
+
+	fp = fopen(path,"wb");
+
+	if( fp == NULL )
+		return 0;
+
+	for( unsigned int i=0 ; i<size ; i++ )
+	{
+		fputc(  *( (char*)(buf) + i ) , fp );
+	}
+	fclose(fp);
+
+	return 1;
+}
+
+
+int write_buf_to_file_a( const char *path , void *buf , size_t size )
+{
+	FILE *fp;
+
+	fp = fopen(path,"ab");
+	fseek(fp,0,SEEK_END);
+	if( fp == NULL )
+		return 0;
+
+	for( register unsigned int i=0 ; i<size ; i++ )
+	{
+		fputc(  *( (char*)(buf) + i ) , fp );
+	}
+
+	fclose(fp);
+
+	return 1;
+}
+
+

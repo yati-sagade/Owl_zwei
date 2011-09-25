@@ -1,0 +1,154 @@
+object Form1: TForm1
+  Left = 0
+  Top = 0
+  Caption = 'Form1'
+  ClientHeight = 456
+  ClientWidth = 504
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Label1: TLabel
+    Left = 37
+    Top = 80
+    Width = 29
+    Height = 13
+    Caption = 'H&ost: '
+  end
+  object Label2: TLabel
+    Left = 279
+    Top = 80
+    Width = 27
+    Height = 13
+    Caption = 'Po&rt: '
+  end
+  object Label3: TLabel
+    Left = 20
+    Top = 139
+    Width = 46
+    Height = 13
+    Caption = '&Message:'
+    Enabled = False
+  end
+  object Label4: TLabel
+    Left = 21
+    Top = 176
+    Width = 48
+    Height = 13
+    Caption = 'Recei&ved:'
+  end
+  object Label5: TLabel
+    Left = 222
+    Top = 439
+    Width = 72
+    Height = 13
+    Caption = 'Not Connected'
+  end
+  object Edit1: TEdit
+    Left = 72
+    Top = 75
+    Width = 201
+    Height = 21
+    TabOrder = 0
+    Text = '127.0.0.1'
+  end
+  object Edit2: TEdit
+    Left = 305
+    Top = 75
+    Width = 72
+    Height = 21
+    TabOrder = 1
+    Text = '4000'
+  end
+  object Mode: TGroupBox
+    Left = 37
+    Top = 8
+    Width = 124
+    Height = 49
+    Caption = '&Mode'
+    TabOrder = 2
+    object RadioButton1: TRadioButton
+      Left = 8
+      Top = 16
+      Width = 113
+      Height = 17
+      Caption = '&Server'
+      TabOrder = 0
+      OnClick = RadioButton1Click
+    end
+    object RadioButton2: TRadioButton
+      Left = 67
+      Top = 16
+      Width = 113
+      Height = 17
+      Caption = 'C&lient'
+      Checked = True
+      TabOrder = 1
+      TabStop = True
+      OnClick = RadioButton2Click
+    end
+  end
+  object Button1: TButton
+    Left = 392
+    Top = 73
+    Width = 75
+    Height = 25
+    Caption = '&connect'
+    TabOrder = 3
+    OnClick = Button1Click
+  end
+  object Edit3: TEdit
+    Left = 72
+    Top = 136
+    Width = 305
+    Height = 21
+    Enabled = False
+    TabOrder = 4
+  end
+  object Button2: TButton
+    Left = 392
+    Top = 134
+    Width = 75
+    Height = 25
+    Caption = 's&end'
+    Enabled = False
+    TabOrder = 5
+    OnClick = Button2Click
+  end
+  object Memo1: TMemo
+    Left = 75
+    Top = 165
+    Width = 395
+    Height = 268
+    Lines.Strings = (
+      'Memo1')
+    ScrollBars = ssBoth
+    TabOrder = 6
+  end
+  object ClientSocket1: TClientSocket
+    Active = False
+    ClientType = ctNonBlocking
+    Port = 0
+    OnConnect = ClientSocket1Connect
+    OnDisconnect = ClientSocket1Disconnect
+    OnRead = ClientSocket1Read
+    Left = 320
+    Top = 8
+  end
+  object ServerSocket1: TServerSocket
+    Active = False
+    Port = 0
+    ServerType = stNonBlocking
+    OnListen = ServerSocket1Listen
+    OnAccept = ServerSocket1Accept
+    OnClientDisconnect = ServerSocket1ClientDisconnect
+    OnClientRead = ServerSocket1ClientRead
+    Left = 384
+    Top = 16
+  end
+end
